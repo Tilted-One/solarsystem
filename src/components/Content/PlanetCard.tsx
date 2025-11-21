@@ -51,7 +51,7 @@ export default function PlanetCard({
   return (
     <div
       className={`relative w-[250px] h-full rounded-2xl shrink-0 snap-center flex justify-center items-center overflow-hidden bg-[#0C0C0E] transition-transform duration-200 ${
-        isSelected ? "ring-2 ring-yellow-300 scale-[1.02]" : ""
+        isSelected ? "scale-[1.02]" : ""
       }`}
       onMouseEnter={handleMouseEnter}
       onMouseLeave={handleMouseLeave}
@@ -63,9 +63,9 @@ export default function PlanetCard({
       <button
         type="button"
         onClick={onSelect}
-        className={`w-auto h-auto rounded-2xl px-8 py-2 absolute bottom-4 z-10 cursor-pointer text-sm font-medium transition-colors ${
+        className={`w-auto h-auto rounded-xl px-8 py-2 absolute bottom-4 z-10 cursor-pointer text-sm font-medium transition-colors ${
           isSelected
-            ? "bg-yellow-300 text-black"
+            ? "bg-[#0C0C0E] text-white border border-white border-2"
             : "bg-white text-black hover:bg-neutral-200"
         }`}
       >
