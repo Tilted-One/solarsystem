@@ -33,9 +33,7 @@ export function createPlanetCardScene(
 
   const textureLoader = new THREE.TextureLoader();
   const texture = textureLoader.load(planet.texture);
-  const nightTexture = planet.nightTexture
-    ? textureLoader.load(planet.nightTexture)
-    : null;
+  const isEarth = planet.name === "Earth";
 
   const maxRadiusScale = 11.2;
   const sizeRatio = THREE.MathUtils.clamp(
@@ -46,36 +44,48 @@ export function createPlanetCardScene(
   const radius = 1 + sizeRatio * 0.1;
 
   const geometry = new THREE.SphereGeometry(radius, 80, 80);
-  const material = new THREE.MeshStandardMaterial({
-    map: texture,
-    metalness: 0.1,
-    roughness: 0.85,
-    emissive: new THREE.Color(0xffffff),
-    emissiveMap: nightTexture || null,
-    emissiveIntensity: nightTexture ? 0.35 : 0,
-  });
+  const material = new THREE.MeshStandardMaterial(
+    isEarth
+      ? {
+          map: texture,
+          metalness: 0,
+          roughness: 0.6,
+        }
+      : {
+          map: texture,
+          metalness: 0.1,
+          roughness: 0.8,
+        }
+  );
   const mesh = new THREE.Mesh(geometry, material);
 
   mesh.rotation.z = THREE.MathUtils.degToRad(planet.axialTiltDeg);
 
   scene.add(mesh);
 
-  let cloudMesh: THREE.Mesh | null = null;
+  const cloudMeshes: THREE.Mesh[] = [];
   let cloudTexture: THREE.Texture | null = null;
 
   if (planet.cloudTexture) {
     cloudTexture = textureLoader.load(planet.cloudTexture);
-    const cloudGeometry = new THREE.SphereGeometry(radius * 1.01, 72, 72);
+
+    const cloudGeometry = new THREE.SphereGeometry(
+      radius * (isEarth ? 1.015 : 1.01),
+      72,
+      72
+    );
     const cloudMaterial = new THREE.MeshStandardMaterial({
       map: cloudTexture,
       transparent: true,
-      opacity: 0.9,
+      opacity: isEarth ? 0.35 : 0.8,
       depthWrite: false,
     });
-    cloudMesh = new THREE.Mesh(cloudGeometry, cloudMaterial);
-    cloudMesh.rotation.z = mesh.rotation.z;
-    cloudMesh.rotation.y = Math.random() * Math.PI * 2;
-    scene.add(cloudMesh);
+    const cm = new THREE.Mesh(cloudGeometry, cloudMaterial);
+    cm.rotation.z = mesh.rotation.z;
+    // random starting longitude so each card shows clouds in a different place
+    cm.rotation.y = Math.random() * Math.PI * 2;
+    scene.add(cm);
+    cloudMeshes.push(cm);
   }
 
   let ringMesh: THREE.Mesh | null = null;
@@ -97,10 +107,11 @@ export function createPlanetCardScene(
     scene.add(ringMesh);
   }
 
-  const ambientLight = new THREE.AmbientLight(0x222233, 0.4);
+  const ambientLight = new THREE.AmbientLight(0x1b2336, 0.45);
   scene.add(ambientLight);
 
   const directionalLight = new THREE.DirectionalLight(0xffffff, 2.0);
+  directionalLight.color = new THREE.Color(0xfff1c2);
   directionalLight.position.set(-6, -4, 6);
   scene.add(directionalLight);
 
@@ -125,8 +136,10 @@ export function createPlanetCardScene(
     const speed = hovered ? hoverRotationSpeed : baseRotationSpeed;
     mesh.rotation.y += speed * (delta / 16.67);
 
-    if (cloudMesh) {
-      cloudMesh.rotation.y += speed * 1.2 * (delta / 16.67);
+    for (let i = 0; i < cloudMeshes.length; i++) {
+      const cm = cloudMeshes[i];
+    const factor = 1.4 + i * 0.25;
+      cm.rotation.y += speed * factor * (delta / 16.67);
     }
 
     renderer.render(scene, camera);
@@ -159,9 +172,9 @@ export function createPlanetCardScene(
       geometry.dispose();
       material.dispose();
       texture.dispose();
-      if (cloudMesh) {
-        (cloudMesh.geometry as THREE.BufferGeometry).dispose();
-        (cloudMesh.material as THREE.Material).dispose();
+      for (const cm of cloudMeshes) {
+        (cm.geometry as THREE.BufferGeometry).dispose();
+        (cm.material as THREE.Material).dispose();
       }
       if (cloudTexture) {
         cloudTexture.dispose();
@@ -173,11 +186,7 @@ export function createPlanetCardScene(
       if (ringTexture) {
         ringTexture.dispose();
       }
-      if (nightTexture) {
-        nightTexture.dispose();
-      }
       renderer.dispose();
     },
   };
 }
-

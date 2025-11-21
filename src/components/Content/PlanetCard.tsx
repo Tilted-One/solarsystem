@@ -11,9 +11,16 @@ import {
 type PlanetCardProps = {
   name: string;
   imgSrc: string;
+  isSelected: boolean;
+  onSelect: () => void;
 };
 
-export default function PlanetCard({ name, imgSrc }: PlanetCardProps) {
+export default function PlanetCard({
+  name,
+  imgSrc,
+  isSelected,
+  onSelect,
+}: PlanetCardProps) {
   const canvasContainerRef = useRef<HTMLDivElement | null>(null);
   const sceneHandleRef = useRef<PlanetCardSceneHandle | null>(null);
 
@@ -43,7 +50,9 @@ export default function PlanetCard({ name, imgSrc }: PlanetCardProps) {
 
   return (
     <div
-      className="relative w-[250px] h-full rounded-2xl shrink-0 snap-center flex justify-center items-center overflow-hidden bg-[#0C0C0E]"
+      className={`relative w-[250px] h-full rounded-2xl shrink-0 snap-center flex justify-center items-center overflow-hidden bg-[#0C0C0E] transition-transform duration-200 ${
+        isSelected ? "ring-2 ring-yellow-300 scale-[1.02]" : ""
+      }`}
       onMouseEnter={handleMouseEnter}
       onMouseLeave={handleMouseLeave}
     >
@@ -51,8 +60,16 @@ export default function PlanetCard({ name, imgSrc }: PlanetCardProps) {
         ref={canvasContainerRef}
         className="absolute inset-0 rounded-2xl pointer-events-none"
       />
-      <button className="w-auto h-auto bg-white rounded-2xl px-8 py-2 absolute bottom-4 z-10">
-        Select {name}
+      <button
+        type="button"
+        onClick={onSelect}
+        className={`w-auto h-auto rounded-2xl px-8 py-2 absolute bottom-4 z-10 cursor-pointer text-sm font-medium transition-colors ${
+          isSelected
+            ? "bg-yellow-300 text-black"
+            : "bg-white text-black hover:bg-neutral-200"
+        }`}
+      >
+        {isSelected ? "Selected" : `Select ${name}`}
       </button>
     </div>
   );

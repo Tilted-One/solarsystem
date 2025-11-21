@@ -1,10 +1,18 @@
 "use client";
 
 import { useRef } from "react";
-import { Planet } from "@/data/planets";
+import { firstFourPlanets, type Planet } from "@/data/planets";
 import PlanetCard from "./PlanetCard";
 
-export default function PlanetCarousel() {
+type PlanetCarouselProps = {
+  selectedPlanetName: string;
+  onSelectPlanet: (name: string) => void;
+};
+
+export default function PlanetCarousel({
+  selectedPlanetName,
+  onSelectPlanet,
+}: PlanetCarouselProps) {
   const scrollRef = useRef<HTMLDivElement | null>(null);
 
   const scrollAmount = 280;
@@ -20,7 +28,7 @@ export default function PlanetCarousel() {
   };
 
   return (
-    <div className="absolute left-0 pl-6 pr-6 w-3/5 h-[282px] bg-white rounded-2xl z-[99] flex items-center">
+    <div className="absolute left-0 top-[96px] pl-6 pr-6 w-3/5 h-[282px] bg-white rounded-2xl z-[99] flex items-center">
       <button
         type="button"
         onClick={handleScrollLeft}
@@ -48,8 +56,14 @@ export default function PlanetCarousel() {
         ref={scrollRef}
         className="w-full h-full py-6 gap-x-4 flex items-center flex-nowrap overflow-x-auto overflow-y-hidden scrollbar-hide snap-x snap-mandatory"
       >
-        {require("../../data/planets").firstFourPlanets.map((planet: Planet) => (
-          <PlanetCard key={planet.name} name={planet.name} imgSrc={planet.image} />
+        {firstFourPlanets.map((planet: Planet) => (
+          <PlanetCard
+            key={planet.name}
+            name={planet.name}
+            imgSrc={planet.image}
+            isSelected={planet.name === selectedPlanetName}
+            onSelect={() => onSelectPlanet(planet.name)}
+          />
         ))}
       </div>
 

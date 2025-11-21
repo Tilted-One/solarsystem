@@ -21,6 +21,12 @@ export type Planet = {
 
     radiusScale: number;
     orbitRadiusScale: number;
+
+    /** A short friendly description used in the side text panel. */
+    description: string;
+
+    /** A couple of tiny facts we can list in the UI. */
+    facts: string[];
 };
 
 export const planets: Planet[] = [
@@ -38,6 +44,13 @@ export const planets: Planet[] = [
         eccentricity: 0.2056,
         radiusScale: 0.38,
         orbitRadiusScale: 0.39,
+        description:
+            "Mercury is the smallest planet and the one closest to the Sun, a rocky world with almost no atmosphere and huge temperature swings between day and night.",
+        facts: [
+            "Orbits the Sun in just 88 Earth days, giving it the shortest year in the Solar System.",
+            "Its surface is heavily cratered and looks a bit like our Moon.",
+            "Despite being closest to the Sun, Venus is actually hotter on average.",
+        ],
     },
     {
         name: "Venus",
@@ -54,6 +67,13 @@ export const planets: Planet[] = [
         eccentricity: 0.0068,
         radiusScale: 0.95,
         orbitRadiusScale: 0.72,
+        description:
+            "Venus is Earth’s “sister” in size but wrapped in a thick, toxic atmosphere that traps heat and makes it the hottest planet.",
+        facts: [
+            "Its thick clouds of carbon dioxide and sulfuric acid create a runaway greenhouse effect.",
+            "A day on Venus (one rotation) is longer than its year and it spins in the opposite direction to most planets.",
+            "From Earth, Venus is often the brightest object in the night sky after the Moon.",
+        ],
     },
     {
         name: "Earth",
@@ -71,6 +91,13 @@ export const planets: Planet[] = [
         eccentricity: 0.0167,
         radiusScale: 1.0,
         orbitRadiusScale: 1.0,
+        description:
+            "Earth is our home planet and the only world we know that has liquid water on the surface and life in incredible variety.",
+        facts: [
+            "About 71% of Earth’s surface is covered by oceans.",
+            "Its tilted axis gives us the changing seasons throughout the year.",
+            "Earth has one natural satellite: the Moon, which helps drive our tides.",
+        ],
     },
     {
         name: "Mars",
@@ -86,6 +113,13 @@ export const planets: Planet[] = [
         eccentricity: 0.0934,
         radiusScale: 0.53,
         orbitRadiusScale: 1.52,
+        description:
+            "Mars is a cold, dusty desert world often called the Red Planet because of the iron-rich rust on its surface.",
+        facts: [
+            "Home to Olympus Mons, the tallest volcano known in the Solar System.",
+            "Has two tiny moons, Phobos and Deimos, which may be captured asteroids.",
+            "Robotic rovers have found strong evidence that liquid water once flowed on Mars.",
+        ],
     },
     {
         name: "Jupiter",
@@ -101,6 +135,13 @@ export const planets: Planet[] = [
         eccentricity: 0.0484,
         radiusScale: 11.2,
         orbitRadiusScale: 5.2,
+        description:
+            "Jupiter is the largest planet, a giant ball of gas with colorful cloud bands and a famous storm called the Great Red Spot.",
+        facts: [
+            "It is more than 11 times wider than Earth and over 300 times more massive.",
+            "Jupiter has at least 90+ known moons, including the volcanic Io and icy Europa.",
+            "Its powerful magnetic field creates intense radiation belts around the planet.",
+        ],
     },
     {
         name: "Saturn",
@@ -117,6 +158,13 @@ export const planets: Planet[] = [
         eccentricity: 0.0542,
         radiusScale: 9.5,
         orbitRadiusScale: 9.58,
+        description:
+            "Saturn is a gas giant best known for its spectacular rings made of countless icy and rocky pieces.",
+        facts: [
+            "Even though its rings are huge, they are only about a few tens of meters thick in many places.",
+            "Saturn is less dense than water—if you had a giant bathtub, it could float.",
+            "Its moon Titan has thick atmosphere and lakes of liquid methane and ethane.",
+        ],
     },
     {
         name: "Uranus",
@@ -132,6 +180,13 @@ export const planets: Planet[] = [
         eccentricity: 0.0472,
         radiusScale: 4.0,
         orbitRadiusScale: 19.2,
+        description:
+            "Uranus is an ice giant with a pale blue-green color, tilted so far over that it essentially rolls around the Sun on its side.",
+        facts: [
+            "Its unusual tilt means its poles can point almost directly at the Sun for part of its long year.",
+            "The planet’s color comes from methane gas in the upper atmosphere absorbing red light.",
+            "It has a faint ring system and more than two dozen known moons.",
+        ],
     },
     {
         name: "Neptune",
@@ -147,6 +202,13 @@ export const planets: Planet[] = [
         eccentricity: 0.0086,
         radiusScale: 3.9,
         orbitRadiusScale: 30.05,
+        description:
+            "Neptune is a deep blue ice giant, the most distant known major planet, with supersonic winds and dark storm systems.",
+        facts: [
+            "It was discovered using mathematics before anyone actually saw it through a telescope.",
+            "Neptune’s largest moon, Triton, orbits backward relative to the planet’s rotation.",
+            "One Neptunian year is about 165 Earth years long.",
+        ],
     },
 ];
 
