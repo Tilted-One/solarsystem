@@ -21,11 +21,7 @@ export type Planet = {
 
     radiusScale: number;
     orbitRadiusScale: number;
-
-    /** A short friendly description used in the side text panel. */
     description: string;
-
-    /** A couple of tiny facts we can list in the UI. */
     facts: string[];
 };
 

@@ -17,7 +17,6 @@ type PlanetCardProps = {
 
 export default function PlanetCard({
   name,
-  imgSrc,
   isSelected,
   onSelect,
 }: PlanetCardProps) {

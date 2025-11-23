@@ -70,19 +70,18 @@ export function createPlanetCardScene(
     cloudTexture = textureLoader.load(planet.cloudTexture);
 
     const cloudGeometry = new THREE.SphereGeometry(
-      radius * (isEarth ? 1.015 : 1.01),
+      radius * (isEarth ? 1.05 : 1.01),
       72,
       72
     );
     const cloudMaterial = new THREE.MeshStandardMaterial({
       map: cloudTexture,
       transparent: true,
-      opacity: isEarth ? 0.35 : 0.8,
+      opacity: isEarth ? 0.15 : 0.8,
       depthWrite: false,
     });
     const cm = new THREE.Mesh(cloudGeometry, cloudMaterial);
     cm.rotation.z = mesh.rotation.z;
-    // random starting longitude so each card shows clouds in a different place
     cm.rotation.y = Math.random() * Math.PI * 2;
     scene.add(cm);
     cloudMeshes.push(cm);

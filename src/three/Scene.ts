@@ -65,7 +65,7 @@ export function createScene(
             nightTexture: {
               value: textureLoader.load(planet.nightTexture),
             },
-            sunDirection: { value: new THREE.Vector3(1, 0, 0) },
+            sunDirection: { value: new THREE.Vector3(5, 64, -10) },
           },
           vertexShader: `
             varying vec3 vNormal;
@@ -89,10 +89,17 @@ export function createScene(
               vec3 sunDirView = normalize((viewMatrix * vec4(sunDirection, 0.0)).xyz);
               float light = max(dot(vNormal, sunDirView), 0.0);
 
-              vec4 dayColor = texture2D(dayTexture, vUv);
-              vec4 nightColor = texture2D(nightTexture, vUv);
+              float dayAmount = smoothstep(0.08, 0.5, light);
+              float nightAmount = 1.0 - dayAmount;
 
-              gl_FragColor = mix(nightColor, dayColor, light);
+              vec3 dayColor = texture2D(dayTexture, vUv).rgb;
+              vec3 nightColor = texture2D(nightTexture, vUv).rgb;
+
+              nightColor *= 1.6;
+
+              vec3 color = dayColor * dayAmount + nightColor * nightAmount;
+
+              gl_FragColor = vec4(color, 1.0);
             }
           `,
         })
@@ -122,17 +129,17 @@ export function createScene(
   if (planet.cloudTexture) {
     cloudTexture = textureLoader.load(planet.cloudTexture);
 
-    const cloudGeometry = new THREE.SphereGeometry(
-      radius * (isEarth ? 1.02 : 1.01),
-      80,
-      80
-    );
+    const cloudRadius = radius * (isEarth ? 1.02 : 1.01);
+    const cloudGeometry = new THREE.SphereGeometry(cloudRadius, 80, 80);
     const cloudMaterial = new THREE.MeshStandardMaterial({
       map: cloudTexture,
       transparent: true,
-      opacity: isEarth ? 0.4 : 0.75,
+      opacity: isEarth ? 0.32 : 0.75,
       depthWrite: false,
+      metalness: 0,
+      roughness: 0.9,
     });
+
     const cm = new THREE.Mesh(cloudGeometry, cloudMaterial);
     cm.rotation.z = sphere.rotation.z;
     cm.rotation.y = Math.random() * Math.PI * 2;
@@ -217,9 +224,7 @@ export function createScene(
     renderer.domElement.style.cursor = "grabbing";
     try {
       renderer.domElement.setPointerCapture(event.pointerId);
-    } catch {
-      // ignore
-    }
+    } catch {}
   };
 
   const handlePointerMove = (event: PointerEvent) => {
@@ -242,9 +247,7 @@ export function createScene(
     renderer.domElement.style.cursor = "grab";
     try {
       renderer.domElement.releasePointerCapture(event.pointerId);
-    } catch {
-      // ignore
-    }
+    } catch {}
   };
 
   const handleWheel = (event: WheelEvent) => {
