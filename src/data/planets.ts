@@ -147,7 +147,6 @@ export const planets: Planet[] = [
         name: "Saturn",
         image: "/textures/saturn.jpg",
         texture: "/textures/saturn.jpg",
-        ringTexture: "/textures/saturn_ring_alpha.png",
         diameterKm: 120536,
         massKg: 5.6834e26,
         semiMajorAxisAu: 9.58,
