@@ -60,14 +60,18 @@ export function createScene(
   const geometry = new THREE.SphereGeometry(radius, 96, 96);
   const surfaceTexture = textureLoader.load(planet.texture);
 
-  const useEarthShader = isEarth && planet.nightTexture;
+  // Only use the custom Earth day/night shader when we know a night texture exists.
+  // The double negation ensures this is typed as a boolean, not `string | undefined`.
+  const useEarthShader = isEarth && !!planet.nightTexture;
 
   const material: THREE.Material = useEarthShader
     ? new THREE.ShaderMaterial({
         uniforms: {
           dayTexture: { value: surfaceTexture },
           nightTexture: {
-            value: textureLoader.load(planet.nightTexture),
+            // Non-null assertion is safe here because `useEarthShader` implies
+            // `planet.nightTexture` is defined (we checked just above).
+            value: textureLoader.load(planet.nightTexture!),
           },
           sunDirection: { value: new THREE.Vector3(5, 64, -10) },
         },
