@@ -3,6 +3,7 @@
 import { useRef } from "react";
 import { firstFourPlanets, type Planet } from "@/data/planets";
 import PlanetCard from "./PlanetCard";
+import CarouselButton from "./CarouselButton";
 
 type PlanetCarouselProps = {
   selectedPlanetName: string;
@@ -29,32 +30,11 @@ export default function PlanetCarousel({
 
   return (
     <div className="absolute left-0 top-[96px] pl-6 pr-6 w-3/5 h-[282px] bg-white rounded-2xl z-[99] flex items-center">
-      <button
-        type="button"
-        onClick={handleScrollLeft}
-        className="absolute left-6 top-1/2 -translate-y-1/2 bg-white rounded-2xl py-2 px-3 flex items-center justify-center cursor-pointer z-10 shadow-xs"
-      >
-        <svg
-          xmlns="http://www.w3.org/2000/svg"
-          width="24"
-          height="24"
-          fill="none"
-          viewBox="0 0 24 24"
-          stroke="currentColor"
-        >
-          <path
-            stroke="black"
-            strokeLinecap="round"
-            strokeLinejoin="round"
-            strokeWidth="2.5"
-            d="M14.75 18l-6-6 6-6"
-          />
-        </svg>
-      </button>
+      <CarouselButton direction="left" onClick={handleScrollLeft} />
 
       <div
         ref={scrollRef}
-        className="w-full h-full py-6 gap-x-4 flex items-center flex-nowrap overflow-x-auto overflow-y-hidden scrollbar-hide snap-x snap-mandatory"
+        className="w-full h-full py-6 pl-1 gap-x-4 flex items-center flex-nowrap overflow-x-auto overflow-y-hidden scrollbar-hide snap-x snap-mandatory"
       >
         {firstFourPlanets.map((planet: Planet) => (
           <PlanetCard
@@ -67,28 +47,7 @@ export default function PlanetCarousel({
         ))}
       </div>
 
-      <button
-        type="button"
-        onClick={handleScrollRight}
-        className="absolute right-6 top-1/2 -translate-y-1/2 bg-white rounded-2xl py-2 px-3 flex items-center justify-center cursor-pointer z-10 shadow-xs"
-      >
-        <svg
-          xmlns="http://www.w3.org/2000/svg"
-          width="24"
-          height="24"
-          fill="none"
-          viewBox="0 0 24 24"
-          stroke="currentColor"
-        >
-          <path
-            stroke="black"
-            strokeLinecap="round"
-            strokeLinejoin="round"
-            strokeWidth="2.5"
-            d="M9.25 6l6 6-6 6"
-          />
-        </svg>
-      </button>
+      <CarouselButton direction="right" onClick={handleScrollRight} />
     </div>
   );
 }
