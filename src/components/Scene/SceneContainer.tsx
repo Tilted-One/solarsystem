@@ -29,7 +29,7 @@ export default function SceneContainer({ planet }: SceneContainerProps) {
     }, [planet]);
 
     return (
-        <div className="w-3/5 h-auto bg-[#0C0C0E] relative rounded-2xl overflow-hidden z-[9]">
+        <div className="w-full md:w-3/5 h-auto bg-[#0C0C0E] relative rounded-2xl overflow-hidden z-[9]">
             <div
                 ref={canvasContainerRef}
                 className="absolute inset-0 rounded-2xl overflow-hidden"

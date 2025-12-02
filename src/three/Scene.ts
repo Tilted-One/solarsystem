@@ -27,11 +27,14 @@ export function createScene(
   );
   renderer.outputColorSpace = THREE.SRGBColorSpace;
   renderer.toneMapping = THREE.NoToneMapping;
+  renderer.domElement.style.touchAction = "none";
 
   container.appendChild(renderer.domElement);
 
   const group = new THREE.Group();
-  group.position.x = 0.8;
+  const isMobileLayout =
+    typeof window !== "undefined" ? window.innerWidth < 768 : width < 768;
+  group.position.x = isMobileLayout ? 0 : 0.8;
   scene.add(group);
 
   const textureLoader = new THREE.TextureLoader();
@@ -57,17 +60,18 @@ export function createScene(
   const geometry = new THREE.SphereGeometry(radius, 96, 96);
   const surfaceTexture = textureLoader.load(planet.texture);
 
-  const material: THREE.Material =
-    isEarth && planet.nightTexture
-      ? new THREE.ShaderMaterial({
-          uniforms: {
-            dayTexture: { value: surfaceTexture },
-            nightTexture: {
-              value: textureLoader.load(planet.nightTexture),
-            },
-            sunDirection: { value: new THREE.Vector3(5, 64, -10) },
+  const useEarthShader = isEarth && planet.nightTexture;
+
+  const material: THREE.Material = useEarthShader
+    ? new THREE.ShaderMaterial({
+        uniforms: {
+          dayTexture: { value: surfaceTexture },
+          nightTexture: {
+            value: textureLoader.load(planet.nightTexture),
           },
-          vertexShader: `
+          sunDirection: { value: new THREE.Vector3(5, 64, -10) },
+        },
+        vertexShader: `
             varying vec3 vNormal;
             varying vec2 vUv;
 
@@ -77,45 +81,47 @@ export function createScene(
               gl_Position = projectionMatrix * modelViewMatrix * vec4(position, 1.0);
             }
           `,
-          fragmentShader: `
-            uniform sampler2D dayTexture;
-            uniform sampler2D nightTexture;
-            uniform vec3 sunDirection;
+        fragmentShader: `
+          uniform sampler2D dayTexture;
+          uniform sampler2D nightTexture;
+          uniform vec3 sunDirection;
 
-            varying vec3 vNormal;
-            varying vec2 vUv;
+          varying vec3 vNormal;
+          varying vec2 vUv;
 
-            void main() {
-              vec3 sunDirView = normalize((viewMatrix * vec4(sunDirection, 0.0)).xyz);
-              float light = max(dot(vNormal, sunDirView), 0.0);
+          void main() {
+            vec3 sunDirView = normalize((viewMatrix * vec4(sunDirection, 0.0)).xyz);
+            float light = dot(vNormal, sunDirView);
 
-              float dayAmount = smoothstep(0.08, 0.5, light);
-              float nightAmount = 1.0 - dayAmount;
+            // Create a softer, more even day/night split,
+            // so roughly half the planet is day and half is night.
+            float dayAmount = smoothstep(-0.15, 0.15, light);
+            float nightAmount = 1.0 - dayAmount;
 
-              vec3 dayColor = texture2D(dayTexture, vUv).rgb;
-              vec3 nightColor = texture2D(nightTexture, vUv).rgb;
+            vec3 dayColor = texture2D(dayTexture, vUv).rgb;
+            vec3 nightColor = texture2D(nightTexture, vUv).rgb;
 
-              nightColor *= 1.6;
+            nightColor *= 1.4;
 
-              vec3 color = dayColor * dayAmount + nightColor * nightAmount;
+            vec3 color = dayColor * dayAmount + nightColor * nightAmount;
 
-              gl_FragColor = vec4(color, 1.0);
+            gl_FragColor = vec4(color, 1.0);
+          }
+        `,
+      })
+    : new THREE.MeshStandardMaterial(
+        isEarth
+          ? {
+              map: surfaceTexture,
+              metalness: 0,
+              roughness: 0.55,
             }
-          `,
-        })
-      : new THREE.MeshStandardMaterial(
-          isEarth
-            ? {
-                map: surfaceTexture,
-                metalness: 0,
-                roughness: 0.55,
-              }
-            : {
-                map: surfaceTexture,
-                metalness: 0.15,
-                roughness: 0.8,
-              }
-        );
+          : {
+              map: surfaceTexture,
+              metalness: 0.15,
+              roughness: 0.8,
+            }
+      );
 
   const sphere = new THREE.Mesh(geometry, material);
   sphere.rotation.z = THREE.MathUtils.degToRad(planet.axialTiltDeg);

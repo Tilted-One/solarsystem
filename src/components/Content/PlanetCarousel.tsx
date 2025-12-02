@@ -29,7 +29,7 @@ export default function PlanetCarousel({
   };
 
   return (
-    <div className="absolute left-0 top-[96px] pl-6 pr-6 w-3/5 h-[282px] bg-white rounded-2xl z-[99] flex items-center">
+    <div className="absolute left-0 top-[96px] pl-6 pr-6 w-full md:w-3/5 h-[282px] bg-white rounded-2xl z-[99] flex items-center">
       <CarouselButton direction="left" onClick={handleScrollLeft} />
 
       <div

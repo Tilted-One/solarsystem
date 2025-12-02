@@ -17,7 +17,7 @@ export default function Home() {
     ) ?? planets[0];
 
   return (
-    <div className="flex min-h-screen w-full p-6 bg-white">
+    <div className="flex flex-col md:flex-row min-h-screen w-full p-6 bg-white">
       <Content
         selectedPlanetName={selectedPlanetName}
         onSelectPlanet={setSelectedPlanetName}

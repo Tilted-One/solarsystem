@@ -22,7 +22,7 @@ export default function Content({
     ) ?? planets[0];
 
   return (
-    <div className="w-2/5 h-full flex flex-col">
+    <div className="w-full md:w-2/5 h-full flex flex-col">
       <Header />
       <PlanetCarousel
         selectedPlanetName={selectedPlanetName}
