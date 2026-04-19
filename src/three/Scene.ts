@@ -72,11 +72,13 @@ export function createScene(
         },
         vertexShader: `
             varying vec3 vNormal;
+            varying vec3 vPosition;
             varying vec2 vUv;
 
             void main() {
               vUv = uv;
               vNormal = normalize(normalMatrix * normal);
+              vPosition = (modelViewMatrix * vec4(position, 1.0)).xyz;
               gl_Position = projectionMatrix * modelViewMatrix * vec4(position, 1.0);
             }
           `,
@@ -86,23 +88,34 @@ export function createScene(
           uniform vec3 sunDirection;
 
           varying vec3 vNormal;
+          varying vec3 vPosition;
           varying vec2 vUv;
 
           void main() {
             vec3 sunDirView = normalize((viewMatrix * vec4(sunDirection, 0.0)).xyz);
+            vec3 viewDir = normalize(-vPosition);
             float light = dot(vNormal, sunDirView);
 
-            // Create a softer, more even day/night split,
-            // so roughly half the planet is day and half is night.
-            float dayAmount = smoothstep(-0.15, 0.15, light);
+            // Improved day/night transition
+            float dayAmount = smoothstep(-0.1, 0.2, light);
             float nightAmount = 1.0 - dayAmount;
 
             vec3 dayColor = texture2D(dayTexture, vUv).rgb;
             vec3 nightColor = texture2D(nightTexture, vUv).rgb;
 
+            // Use luminosity of the day map to approximate water for specular highlights
+            float reflectivity = 1.0 - smoothstep(0.2, 0.4, (dayColor.r + dayColor.g + dayColor.b) / 3.0);
+            vec3 reflectionDir = reflect(-sunDirView, vNormal);
+            float specular = pow(max(dot(viewDir, reflectionDir), 0.0), 32.0) * reflectivity * dayAmount;
+
             nightColor *= 1.4;
 
-            vec3 color = dayColor * dayAmount + nightColor * nightAmount;
+            // Atmospheric Scattering (Fresnel)
+            float fresnel = pow(1.0 - max(dot(vNormal, viewDir), 0.0), 4.0);
+            vec3 atmosphereColor = vec3(0.3, 0.6, 1.0) * fresnel * max(light + 0.2, 0.0);
+
+            vec3 color = dayColor * dayAmount + (nightColor * nightAmount) + (specular * 0.4);
+            color += atmosphereColor * 0.6;
 
             gl_FragColor = vec4(color, 1.0);
           }
@@ -139,11 +152,16 @@ export function createScene(
     const cloudMaterial = new THREE.MeshStandardMaterial({
       map: cloudTexture,
       transparent: true,
-      opacity: isEarth ? 0.32 : 0.75,
+      opacity: isEarth ? 0.45 : 0.75,
       depthWrite: false,
       metalness: 0,
       roughness: 0.9,
     });
+    
+    // Slight blue tint for clouds at edges
+    if (isEarth) {
+      cloudMaterial.color.set(0xecf6ff);
+    }
 
     const cm = new THREE.Mesh(cloudGeometry, cloudMaterial);
     cm.rotation.z = sphere.rotation.z;
